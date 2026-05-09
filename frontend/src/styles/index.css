@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --appia-bg: #080c14;
+  --appia-surface: #0d1421;
+  --appia-card: #111927;
+  --appia-border: #1e2d45;
+  --appia-accent: #00d4ff;
+  --appia-accent2: #00ff9d;
+  --appia-warn: #ff9500;
+  --appia-danger: #ff3b30;
+  --appia-text: #e8f0fe;
+  --appia-muted: #6b7fa3;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background-color: var(--appia-bg);
+  color: var(--appia-text);
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--appia-bg); }
+::-webkit-scrollbar-thumb { background: var(--appia-border); border-radius: 3px; }
+
+/* Glow effects */
+.glow-cyan  { box-shadow: 0 0 20px rgba(0, 212, 255, 0.15); }
+.glow-green { box-shadow: 0 0 20px rgba(0, 255, 157, 0.15); }
+.glow-warn  { box-shadow: 0 0 20px rgba(255, 149, 0, 0.15); }
+
+/* Pulse animation for live indicator */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}
+.pulse-dot { animation: pulse-dot 1.8s ease-in-out infinite; }
+
+/* Node ping on map */
+@keyframes node-ping {
+  0% { transform: scale(1); opacity: 0.8; }
+  70% { transform: scale(2.5); opacity: 0; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+.node-ping { animation: node-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite; }
+
+/* Scan line effect */
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+/* Traffic flow along links */
+@keyframes traffic-flow {
+  0%   { stroke-dashoffset: 20; opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { stroke-dashoffset: 0;  opacity: 0; }
+}
+.link-flow {
+  stroke-dasharray: 2 18;
+  animation: traffic-flow 2.5s linear infinite;
+}
+
+/* Node drag highlight */
+.node-dragging circle { filter: brightness(1.3); }
+
+/* Card hover */
+.appia-card {
+  background: var(--appia-card);
+  border: 1px solid var(--appia-border);
+  border-radius: 12px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.appia-card:hover {
+  border-color: rgba(0, 212, 255, 0.35);
+  box-shadow: 0 0 25px rgba(0, 212, 255, 0.08);
+}
+
+/* Mono font for numbers */
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+/* Carbon color scale */
+.carbon-low    { color: #00ff9d; }
+.carbon-med    { color: #ffd60a; }
+.carbon-high   { color: #ff9500; }
+.carbon-vhigh  { color: #ff3b30; }
+
+/* Status badge */
+.badge-online   { background: rgba(0,255,157,0.1); color: #00ff9d; border: 1px solid rgba(0,255,157,0.3); }
+.badge-degraded { background: rgba(255,149,0,0.1);  color: #ff9500; border: 1px solid rgba(255,149,0,0.3); }
+.badge-offline  { background: rgba(255,59,48,0.1);  color: #ff3b30; border: 1px solid rgba(255,59,48,0.3); }
+
+/* Priority badges */
+.badge-critical { background: rgba(255,59,48,0.12); color: #ff6b6b; border: 1px solid rgba(255,59,48,0.3); }
+.badge-medium   { background: rgba(255,214,10,0.1);  color: #ffd60a; border: 1px solid rgba(255,214,10,0.3); }
+.badge-low      { background: rgba(0,255,157,0.1);   color: #00ff9d; border: 1px solid rgba(0,255,157,0.3); }
+
+/* Gauge bar */
+.gauge-track { background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; }
+.gauge-fill  { border-radius: 99px; transition: width 0.6s ease; }
+
+/* Grid layout helpers */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  grid-template-rows: auto 1fr auto;
+  gap: 16px;
+  height: calc(100vh - 70px);
+  padding: 16px;
+}
+
+@media (max-width: 1200px) {
+  .dashboard-grid { grid-template-columns: 1fr; height: auto; }
+}

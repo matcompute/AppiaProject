@@ -1,0 +1,73 @@
+# ══════════════════════════════════════════════════════════
+#  Appia — Root .gitignore
+#  NEVER commit secrets, compiled binaries, or dependencies
+# ══════════════════════════════════════════════════════════
+
+# ── Secrets (API keys, credentials) ──────────────────────
+.env
+*.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+geminiapikey*
+secrets/
+
+# ── Java / Maven build output ─────────────────────────────
+**/target/
+*.class
+*.jar
+!backend/mvnw
+*.war
+*.ear
+
+# ── Node / React ──────────────────────────────────────────
+**/node_modules/
+**/dist/
+**/.vite/
+frontend/.cache/
+npm-debug.log*
+
+# ── Python ────────────────────────────────────────────────
+**/__pycache__/
+*.py[cod]
+*.pyo
+.Python
+**/venv/
+**/.venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# ── Trained ML models (large binaries — train locally) ────
+*.zip
+*.pt
+*.pkl
+*.h5
+ppo_appia_model*
+simulation/logs/
+simulation/models/
+
+# ── IDE ───────────────────────────────────────────────────
+.idea/
+*.iml
+.vscode/
+*.swp
+.classpath
+.project
+.settings/
+
+# ── OS ────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Database files ────────────────────────────────────────
+*.db
+*.mv.db
+*.trace.db
+
+# ── Logs ──────────────────────────────────────────────────
+*.log
+logs/

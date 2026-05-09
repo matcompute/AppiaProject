@@ -1,0 +1,42 @@
+# ── Secrets — NEVER commit ───────────────────────────────────────────────────
+.env
+*.env
+geminiapikey.txt
+geminiapikey.txt.txt
+*.key
+*.pem
+*.p12
+
+# ── Local Maven download (auto-downloaded by run.bat) ─────────────────────────
+.maven/
+
+# ── Maven build output ────────────────────────────────────────────────────────
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# ── IDE files ─────────────────────────────────────────────────────────────────
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+*.eclipse
+.classpath
+.project
+.settings/
+
+# ── OS noise ─────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
+logs/
+
+# ── H2 database files (if ever persisted to disk) ────────────────────────────
+*.db
+*.mv.db
+*.trace.db

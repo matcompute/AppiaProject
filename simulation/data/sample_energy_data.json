@@ -1,0 +1,53 @@
+{
+  "description": "Sample 24-hour energy profiles for 5 Appia network sites",
+  "source": "Based on real EU carbon intensity data (Electricity Maps) and ENTSO-E day-ahead prices",
+  "nodes": {
+    "NO-OSLO-01": {
+      "name": "Oslo Edge Node",
+      "location": "Norway",
+      "energy_mix": {"hydro": 0.92, "solar": 0.06, "wind": 0.02},
+      "avg_carbon_gco2_kwh": 25,
+      "avg_cost_eur_kwh": 0.04,
+      "24h_carbon_profile": [22, 21, 20, 20, 21, 23, 26, 28, 27, 26, 25, 24, 23, 24, 25, 26, 28, 30, 29, 27, 25, 24, 23, 22]
+    },
+    "DK-CPH-01": {
+      "name": "Copenhagen Core",
+      "location": "Denmark",
+      "energy_mix": {"wind": 0.55, "solar": 0.10, "gas": 0.20, "other": 0.15},
+      "avg_carbon_gco2_kwh": 120,
+      "avg_cost_eur_kwh": 0.12,
+      "24h_carbon_profile": [95, 90, 88, 87, 90, 100, 115, 130, 125, 120, 115, 110, 108, 110, 115, 120, 135, 145, 140, 130, 120, 110, 100, 97]
+    },
+    "IT-MIL-01": {
+      "name": "Milan Data Center",
+      "location": "Italy",
+      "energy_mix": {"gas": 0.45, "renewable": 0.30, "nuclear": 0.10, "other": 0.15},
+      "avg_carbon_gco2_kwh": 280,
+      "avg_cost_eur_kwh": 0.22,
+      "24h_carbon_profile": [240, 230, 225, 220, 225, 245, 270, 295, 290, 280, 275, 270, 265, 270, 275, 280, 300, 320, 310, 295, 280, 265, 255, 245]
+    },
+    "DE-FRA-01": {
+      "name": "Frankfurt Hub",
+      "location": "Germany",
+      "energy_mix": {"coal": 0.25, "gas": 0.25, "renewable": 0.35, "nuclear": 0.05, "other": 0.10},
+      "avg_carbon_gco2_kwh": 320,
+      "avg_cost_eur_kwh": 0.18,
+      "24h_carbon_profile": [270, 260, 255, 250, 255, 280, 310, 345, 340, 325, 315, 305, 300, 305, 315, 325, 355, 380, 365, 345, 325, 305, 290, 278]
+    },
+    "ET-ADD-01": {
+      "name": "Addis Ababa Edge",
+      "location": "Ethiopia",
+      "energy_mix": {"hydro": 0.55, "solar": 0.15, "backup_diesel": 0.30},
+      "avg_carbon_gco2_kwh": 180,
+      "avg_cost_eur_kwh": 0.08,
+      "power_shedding_schedule": {
+        "typical_hours": [8, 9, 10, 14, 15, 18, 19, 20],
+        "probability": 0.35,
+        "note": "Grid power shedding is common. Battery + solar provide backup."
+      },
+      "24h_carbon_profile": [80, 75, 70, 70, 75, 90, 350, 380, 95, 85, 80, 78, 76, 78, 82, 86, 400, 420, 380, 100, 92, 85, 82, 80]
+    }
+  },
+  "carbon_intensity_api": "https://api.electricitymap.org/v3/carbon-intensity/latest",
+  "price_api": "https://transparency.entsoe.eu/transmission-domain/r2/dayAheadPrices/show"
+}
