@@ -85,9 +85,9 @@ export default function NodeCard({ node, isSelected, onClick, sfcCount = 0 }) {
         </div>
         <div style={{ textAlign: 'center' }}>
           <div className="mono" style={{ fontSize: 12, color: 'var(--appia-accent2)', fontWeight: 600 }}>
-            {node.latency_ms}ms
+            {node.processing_latency_ms ?? '—'}ms
           </div>
-          <div style={{ fontSize: 9, color: 'var(--appia-muted)' }}>latency</div>
+          <div style={{ fontSize: 9, color: 'var(--appia-muted)' }}>proc. latency</div>
         </div>
         <div style={{ textAlign: 'center' }}>
           <div className="mono" style={{ fontSize: 12, color: sfcCount > 0 ? 'var(--appia-accent)' : 'var(--appia-muted)', fontWeight: 600 }}>
@@ -105,7 +105,7 @@ export default function NodeCard({ node, isSelected, onClick, sfcCount = 0 }) {
 
       {/* Node ID */}
       <div style={{ marginTop: 6, fontSize: 9, color: 'var(--appia-muted)', fontFamily: 'JetBrains Mono' }}>
-        {node.node_id} · {node.type.toUpperCase()}
+        {node.node_id} · {(node.node_type || node.type || 'EDGE').toUpperCase()}
       </div>
     </div>
   )

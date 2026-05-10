@@ -11,7 +11,7 @@ import ResiliencePanel from './components/ResiliencePanel'
 import SlicePanel from './components/SlicePanel'
 import BenchmarkPanel from './components/BenchmarkPanel'
 import { useBackend } from './hooks/useBackend'
-import { CARBON_HISTORY } from './data/mockData'
+import { CARBON_HISTORY } from './data/mockData'  // fallback only — live data preferred
 
 // ── Local simulation helpers (used when backend is offline) ───────────────────
 const solarAvail = (h) => {
@@ -98,6 +98,9 @@ export default function App() {
 
   const nodes = simNodes || backend.nodes
   const sfcs  = backend.sfcs
+  // Live data preferred; fall back to mock when backend is offline or has no history yet
+  const carbonHistory  = backend.carbonHistory  || CARBON_HISTORY
+  const benchmarkStats = backend.benchmarkStats
 
   const tick = useCallback(() => {
     setHour(h => {
@@ -285,8 +288,9 @@ export default function App() {
           <MetricsDashboard
             nodes={nodes}
             sfcs={sfcs}
-            carbonHistory={CARBON_HISTORY}
+            carbonHistory={carbonHistory}
             currentHour={hour}
+            isLiveData={!!backend.carbonHistory}
           />
         )}
 
@@ -309,17 +313,4 @@ export default function App() {
 
         {/* SLICING TAB */}
         {activeTab === 'slices' && (
-          <SlicePanel isOnline={backend.isOnline} />
-        )}
-
-        {/* BENCHMARK TAB */}
-        {activeTab === 'benchmark' && (
-          <BenchmarkPanel isOnline={backend.isOnline} />
-        )}
-
-        {/* ADVISOR TAB */}
-        {activeTab === 'advisor' && <AskAppia />}
-      </div>
-    </div>
-  )
-}
+          <SlicePa

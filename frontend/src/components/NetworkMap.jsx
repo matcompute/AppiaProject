@@ -188,31 +188,38 @@ export default function NetworkMap({ nodes: initialNodes, links, sfcs, selectedN
           const mx = (x1 + x2) / 2
           const my = (y1 + y2) / 2 - 3
 
+          // Latency-based link color: green (<20ms) → yellow (<50ms) → orange (<100ms) → red
+          const latency = link.latency_ms || link.base_latency_ms || 10
+          const linkColor = latency < 20 ? '#00ff9d' : latency < 50 ? '#ffd60a' : latency < 100 ? '#ff9500' : '#ff3b30'
+          const linkOpacity = hasSfcs ? 0.75 : 0.35
+          const strokeW = hasSfcs ? 0.55 : 0.28
+
           return (
             <g key={i}>
               {/* Shadow / glow line */}
               {hasSfcs && (
                 <path d={`M${x1},${y1} Q${mx},${my} ${x2},${y2}`}
-                  fill="none" stroke="rgba(0,212,255,0.12)" strokeWidth="2.5" filter="url(#glow)"/>
+                  fill="none" stroke={`${linkColor}22`} strokeWidth="2.8" filter="url(#glow)"/>
               )}
-              {/* Main link */}
+              {/* Main link — color encodes latency, width encodes traffic */}
               <path
                 d={`M${x1},${y1} Q${mx},${my} ${x2},${y2}`}
                 fill="none"
-                stroke={hasSfcs ? 'rgba(0,212,255,0.55)' : 'rgba(20,50,80,0.8)'}
-                strokeWidth={hasSfcs ? 0.5 : 0.3}
+                stroke={hasSfcs ? linkColor : 'rgba(20,50,80,0.8)'}
+                strokeWidth={strokeW}
                 strokeDasharray={hasSfcs ? 'none' : '0.8 1.2'}
+                strokeOpacity={linkOpacity}
               />
               {/* Animated traffic dots for active links */}
               {hasSfcs && (
                 <>
-                  <TrafficDot x1={x1} y1={y1} x2={x2} y2={y2} color="#00d4ff" delay={0}   duration={2.5 + i * 0.3} />
-                  <TrafficDot x1={x1} y1={y1} x2={x2} y2={y2} color="#00ff9d" delay={1.2} duration={2.5 + i * 0.3} />
+                  <TrafficDot x1={x1} y1={y1} x2={x2} y2={y2} color={linkColor} delay={0}   duration={2.5 + i * 0.3} />
+                  <TrafficDot x1={x1} y1={y1} x2={x2} y2={y2} color="#00ff9d"   delay={1.2} duration={2.5 + i * 0.3} />
                 </>
               )}
-              {/* Bandwidth label on hover (midpoint) */}
-              <text x={mx} y={my - 1.5} textAnchor="middle" fontSize="1.5" fill="rgba(0,212,255,0.5)">
-                {link.bandwidth_gbps}G
+              {/* Latency + bandwidth label at midpoint */}
+              <text x={mx} y={my - 1.5} textAnchor="middle" fontSize="1.5" fill={`${linkColor}99`}>
+                {latency}ms · {link.bandwidth_gbps}G
               </text>
             </g>
           )
@@ -227,7 +234,8 @@ export default function NetworkMap({ nodes: initialNodes, links, sfcs, selectedN
           const isDragging = dragging?.nodeId === node.node_id
           const color = CARBON_COLOR(node.carbon_intensity)
           const count = sfcCount[node.node_id] || 0
-          const r = node.type === 'dc' ? 3.2 : node.type === 'core' ? 2.8 : 2.4
+          const nodeType = node.node_type || node.type || 'edge'
+          const r = nodeType === 'dc' ? 3.2 : nodeType === 'core' ? 2.8 : 2.4
 
           return (
             <g
@@ -332,32 +340,4 @@ export default function NetworkMap({ nodes: initialNodes, links, sfcs, selectedN
           )
         })}
 
-        {/* ── Coordinates hint ───────────────────────────────────────────── */}
-        <text x="2" y="93" fontSize="1.5" fill="rgba(107,127,163,0.5)">
-          EU + Africa · {initialNodes.length} nodes · {sfcs.length} SFCs
-        </text>
-      </svg>
-
-      {/* Carbon legend */}
-      <div style={{
-        position: 'absolute', bottom: 10, right: 12,
-        display: 'flex', gap: 8, fontSize: 9,
-        background: 'rgba(8,12,20,0.8)', padding: '4px 8px', borderRadius: 6,
-        border: '1px solid rgba(30,45,69,0.5)',
-      }}>
-        {[
-          { color: '#00ff9d', label: '<50' },
-          { color: '#ffd60a', label: '50–150' },
-          { color: '#ff9500', label: '150–300' },
-          { color: '#ff3b30', label: '>300' },
-        ].map(({ color, label }) => (
-          <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-            <div style={{ width: 7, height: 7, borderRadius: '50%', background: color, boxShadow: `0 0 4px ${color}` }} />
-            <span style={{ color: 'var(--appia-muted)' }}>{label}</span>
-          </div>
-        ))}
-        <span style={{ color: 'rgba(107,127,163,0.4)', marginLeft: 2 }}>gCO₂/kWh</span>
-      </div>
-    </div>
-  )
-}
+        {/* ── Coordinates hint ─────────────────────────────────�

@@ -22,7 +22,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   )
 }
 
-export default function MetricsDashboard({ nodes, sfcs, carbonHistory, currentHour }) {
+export default function MetricsDashboard({ nodes, sfcs, carbonHistory, currentHour, isLiveData }) {
   const totalSfcs = sfcs.length
   const slaOk = sfcs.filter(s => s.sla_ok).length
   const slaRate = Math.round((slaOk / totalSfcs) * 100)
@@ -70,77 +70,65 @@ export default function MetricsDashboard({ nodes, sfcs, carbonHistory, currentHo
           <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--appia-accent)', letterSpacing: 2 }}>
             CARBON INTENSITY — 24H TREND
           </span>
-          <span style={{ fontSize: 10, color: 'var(--appia-muted)' }}>gCO₂/kWh</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{
+              fontSize: 10, padding: '2px 8px', borderRadius: 9999, fontWeight: 700,
+              background: isLiveData ? 'rgba(0,255,157,0.15)' : 'rgba(167,139,250,0.15)',
+              color: isLiveData ? '#00ff9d' : '#a78bfa',
+            }}>
+              {isLiveData ? '🔴 LIVE' : '📄 SIMULATION'}
+            </span>
+            <span style={{ fontSize: 10, color: 'var(--appia-muted)' }}>gCO₂/kWh</span>
+          </div>
         </div>
-        <ResponsiveContainer width="100%" height={200}>
-          <LineChart data={carbonHistory} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(30,45,69,0.8)" />
-            <XAxis
-              dataKey="hour"
-              tick={{ fill: '#6b7fa3', fontSize: 10 }}
-              tickLine={false}
-              interval={3}
-            />
-            <YAxis tick={{ fill: '#6b7fa3', fontSize: 10 }} tickLine={false} />
-            <Tooltip content={<CustomTooltip />} />
-            <ReferenceLine y={150} stroke="rgba(0,212,255,0.3)" strokeDasharray="4 4"
-              label={{ value: 'Green threshold', fill: '#00d4ff', fontSize: 9, position: 'right' }} />
-            {LINES.map(l => (
-              <Line
-                key={l.key}
-                type="monotone"
-                dataKey={l.key}
-                name={l.name}
-                stroke={l.color}
-                strokeWidth={1.5}
-                dot={false}
-                activeDot={{ r: 4, stroke: l.color, strokeWidth: 2, fill: '#111927' }}
+
+        {/* Live format: one avgCarbon line + slaRate from placement history */}
+        {isLiveData ? (
+          <ResponsiveContainer width="100%" height={200}>
+            <LineChart data={carbonHistory} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(30,45,69,0.8)" />
+              <XAxis
+                dataKey="label"
+                tick={{ fill: '#6b7fa3', fontSize: 10 }}
+                tickLine={false}
+                interval={3}
               />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* Energy mix per node */}
-      <div className="appia-card" style={{ padding: '14px 16px' }}>
-        <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--appia-accent)', letterSpacing: 2, marginBottom: 12 }}>
-          ENERGY MIX BY NODE
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {nodes.map(node => {
-            const mix = node.energy_mix || {}
-            const total = Object.values(mix).reduce((a, b) => a + b, 0)
-            const segments = Object.entries(mix)
-            const MIX_COLORS = {
-              hydro: '#00d4ff', solar: '#ffd60a', wind: '#00ff9d',
-              gas: '#ff9500', coal: '#ff3b30', nuclear: '#a78bfa',
-              renewable: '#00ff9d', other: '#6b7fa3', backup_diesel: '#ff3b30'
-            }
-
-            return (
-              <div key={node.node_id} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{ minWidth: 80, fontSize: 11 }}>{node.flag} {node.name.split(' ')[0]}</span>
-                <div style={{ flex: 1, height: 12, borderRadius: 6, overflow: 'hidden', display: 'flex', background: 'rgba(255,255,255,0.05)' }}>
-                  {segments.map(([key, pct]) => (
-                    <div key={key} title={`${key}: ${pct}%`} style={{
-                      width: `${(pct / total) * 100}%`,
-                      background: MIX_COLORS[key] || '#6b7fa3',
-                      transition: 'width 0.5s ease',
-                    }} />
-                  ))}
-                </div>
-                <div style={{ display: 'flex', gap: 8, minWidth: 200 }}>
-                  {segments.slice(0, 3).map(([key, pct]) => (
-                    <span key={key} style={{ fontSize: 9, color: MIX_COLORS[key] || '#6b7fa3' }}>
-                      {key} {pct}%
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      </div>
-    </div>
-  )
-}
+              <YAxis tick={{ fill: '#6b7fa3', fontSize: 10 }} tickLine={false} />
+              <Tooltip
+                contentStyle={{ background: '#111927', border: '1px solid #1e2d45', borderRadius: 8, fontSize: 11 }}
+                labelStyle={{ color: '#6b7fa3', fontWeight: 600, marginBottom: 4 }}
+              />
+              <ReferenceLine y={150} stroke="rgba(0,212,255,0.3)" strokeDasharray="4 4"
+                label={{ value: 'Green threshold', fill: '#00d4ff', fontSize: 9, position: 'right' }} />
+              <Line type="monotone" dataKey="avgCarbon" name="Avg Carbon (gCO₂)"
+                stroke="#00ff9d" strokeWidth={2} dot={false}
+                activeDot={{ r: 4, stroke: '#00ff9d', strokeWidth: 2, fill: '#111927' }}
+                connectNulls={false} />
+              <Line type="monotone" dataKey="avgReward" name="Avg Reward"
+                stroke="#a78bfa" strokeWidth={1.5} dot={false} strokeDasharray="4 2"
+                activeDot={{ r: 4, stroke: '#a78bfa', strokeWidth: 2, fill: '#111927' }}
+                connectNulls={false} />
+            </LineChart>
+          </ResponsiveContainer>
+        ) : (
+          /* Simulation format: per-node carbon lines from mockData */
+          <ResponsiveContainer width="100%" height={200}>
+            <LineChart data={carbonHistory} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(30,45,69,0.8)" />
+              <XAxis
+                dataKey="hour"
+                tick={{ fill: '#6b7fa3', fontSize: 10 }}
+                tickLine={false}
+                interval={3}
+              />
+              <YAxis tick={{ fill: '#6b7fa3', fontSize: 10 }} tickLine={false} />
+              <Tooltip content={<CustomTooltip />} />
+              <ReferenceLine y={150} stroke="rgba(0,212,255,0.3)" strokeDasharray="4 4"
+                label={{ value: 'Green threshold', fill: '#00d4ff', fontSize: 9, position: 'right' }} />
+              {LINES.map(l => (
+                <Line
+                  key={l.key}
+                  type="monotone"
+                  dataKey={l.key}
+                  name={l.name}
+   
