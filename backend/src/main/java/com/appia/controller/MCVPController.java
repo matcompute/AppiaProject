@@ -41,13 +41,11 @@ public class MCVPController {
     // Aligned with 3GPP QoS class priorities (TS 23.501 §5.7.2)
     // Java 11 compatible — no switch expressions
     private static double[] weights(ServiceFunctionChain.Priority p) {
-        if (p == ServiceFunctionChain.Priority.CRITICAL) {
-            return new double[]{0.20, 0.50, 0.10, 0.20}; // latency dominant (URLLC)
-        } else if (p == ServiceFunctionChain.Priority.MEDIUM) {
-            return new double[]{0.35, 0.25, 0.25, 0.15}; // balanced (eMBB)
-        } else {
-            return new double[]{0.45, 0.10, 0.35, 0.10}; // carbon/cost focus (mMTC)
-        }
+        return switch (p) {
+            case CRITICAL -> new double[]{0.20, 0.50, 0.10, 0.20}; // latency dominant (URLLC)
+            case MEDIUM   -> new double[]{0.35, 0.25, 0.25, 0.15}; // balanced (eMBB)
+            default       -> new double[]{0.45, 0.10, 0.35, 0.10}; // carbon/cost focus (mMTC)
+        };
     }
 
     /**
@@ -159,15 +157,11 @@ public class MCVPController {
         resp.put("wLatency",  w[1]);
         resp.put("wCost",     w[2]);
         resp.put("wLoad",     w[3]);
-        String rationale;
-        if (p == ServiceFunctionChain.Priority.CRITICAL) {
-            rationale = "URLLC: latency dominates (W_l=0.50). Meets 3GPP TS 22.261 §7.2 1ms E2E target.";
-        } else if (p == ServiceFunctionChain.Priority.MEDIUM) {
-            rationale = "eMBB: balanced multi-criteria. Optimises throughput/energy trade-off.";
-        } else {
-            rationale = "mMTC: carbon and cost dominate (W_c=0.45). Maximises green efficiency for IoT workloads.";
-        }
-        resp.put("rationale", rationale);
+        resp.put("rationale", switch (p) {
+            case CRITICAL -> "URLLC: latency dominates (W_l=0.50). Meets 3GPP TS 22.261 §7.2 1ms E2E target.";
+            case MEDIUM   -> "eMBB: balanced multi-criteria. Optimises throughput/energy trade-off.";
+            default       -> "mMTC: carbon and cost dominate (W_c=0.45). Maximises green efficiency for IoT workloads.";
+        });
         return ResponseEntity.ok(resp);
     }
 
@@ -179,4 +173,10 @@ public class MCVPController {
         m.put("priority",    sfc.getPriority().name());
         m.put("status",      sfc.getStatus().name());
         m.put("cpuRequired", sfc.getCpuRequiredCores());
-        m.put("memRequired", sfc.getMemoryRequiredGb())
+        m.put("memRequired", sfc.getMemoryRequiredGb());
+        m.put("bwRequired",  sfc.getBandwidthRequiredGbps());
+        m.put("assignedNode",sfc.getAssignedNode() != null ? sfc.getAssignedNode().getNodeId() : null);
+        return m;
+    }
+
+    private static double round3(dou

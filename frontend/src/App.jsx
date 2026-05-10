@@ -10,6 +10,8 @@ import IntentPanel from './components/IntentPanel'
 import ResiliencePanel from './components/ResiliencePanel'
 import SlicePanel from './components/SlicePanel'
 import BenchmarkPanel from './components/BenchmarkPanel'
+import MCVPExplainer from './components/MCVPExplainer'
+import ArchitectureDiagram from './components/ArchitectureDiagram'
 import { useBackend } from './hooks/useBackend'
 import { CARBON_HISTORY } from './data/mockData'  // fallback only — live data preferred
 
@@ -76,6 +78,8 @@ const TABS = [
   { id: 'resilience', icon: '🛡️', label: 'Resilience', badge: 'NEW' },
   { id: 'slices',     icon: '🍕', label: 'Slicing',    badge: 'NEW' },
   { id: 'benchmark',  icon: '📊', label: 'Benchmark',  badge: 'NEW' },
+  { id: 'mcvp',       icon: '🧮', label: 'MCVP',       badge: 'NEW' },
+  { id: 'arch',       icon: '🏗️', label: 'Architecture', badge: 'NEW' },
   { id: 'advisor',    icon: '✦',  label: 'Ask Appia'              },
 ]
 
@@ -146,12 +150,18 @@ export default function App() {
         />
       </div>
 
-      {/* Nav tabs */}
-      <div style={{ display: 'flex', gap: 2, padding: '8px 16px', borderBottom: '1px solid var(--appia-border)', alignItems: 'center' }}>
+      {/* Nav tabs — horizontally scrollable so all 12 tabs stay accessible */}
+      <div style={{
+        display: 'flex', gap: 2, padding: '6px 16px',
+        borderBottom: '1px solid var(--appia-border)',
+        alignItems: 'center', overflowX: 'auto', overflowY: 'hidden',
+        scrollbarWidth: 'none',   /* Firefox */
+        msOverflowStyle: 'none',  /* IE/Edge */
+      }}>
         {TABS.map(tab => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
-            padding: '6px 18px', borderRadius: 6, cursor: 'pointer',
-            fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1,
+            padding: '5px 12px', borderRadius: 6, cursor: 'pointer', flexShrink: 0,
+            fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.8,
             background: activeTab === tab.id ? 'rgba(0,212,255,0.12)' : 'transparent',
             color: activeTab === tab.id
               ? (tab.id === 'advisor' ? '#a78bfa' : 'var(--appia-accent)')
@@ -159,18 +169,19 @@ export default function App() {
             border: `1px solid ${activeTab === tab.id
               ? (tab.id === 'advisor' ? 'rgba(167,139,250,0.35)' : 'rgba(0,212,255,0.35)')
               : 'transparent'}`,
+            whiteSpace: 'nowrap',
           }}>
             {tab.icon} {tab.label}
             {tab.id === 'advisor' && (
               <span style={{
-                marginLeft: 6, fontSize: 8, padding: '1px 5px', borderRadius: 4,
+                marginLeft: 5, fontSize: 7, padding: '1px 4px', borderRadius: 4,
                 background: 'rgba(167,139,250,0.2)', color: '#a78bfa',
                 fontWeight: 700, letterSpacing: 0.5,
               }}>AI</span>
             )}
             {tab.badge && tab.id !== 'advisor' && (
               <span style={{
-                marginLeft: 6, fontSize: 8, padding: '1px 5px', borderRadius: 4,
+                marginLeft: 5, fontSize: 7, padding: '1px 4px', borderRadius: 4,
                 background: 'rgba(34,197,94,0.2)', color: '#22c55e',
                 fontWeight: 700, letterSpacing: 0.5,
               }}>{tab.badge}</span>
@@ -294,23 +305,4 @@ export default function App() {
           />
         )}
 
-        {/* EVENTS TAB */}
-        {activeTab === 'events' && (
-          <div style={{ maxWidth: 860, margin: '0 auto' }}>
-            <EventLog isOnline={backend.isOnline} />
-          </div>
-        )}
-
-        {/* INTENTS TAB */}
-        {activeTab === 'intents' && (
-          <IntentPanel isOnline={backend.isOnline} />
-        )}
-
-        {/* RESILIENCE TAB */}
-        {activeTab === 'resilience' && (
-          <ResiliencePanel isOnline={backend.isOnline} />
-        )}
-
-        {/* SLICING TAB */}
-        {activeTab === 'slices' && (
-          <SlicePa
+        {/* E

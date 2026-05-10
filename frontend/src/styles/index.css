@@ -17,6 +17,9 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Hide scrollbar on tab nav row (Chrome/Safari) */
+.tab-nav::-webkit-scrollbar { display: none; }
+
 body {
   background-color: var(--appia-bg);
   color: var(--appia-text);
@@ -112,9 +115,4 @@ body {
   grid-template-rows: auto 1fr auto;
   gap: 16px;
   height: calc(100vh - 70px);
-  padding: 16px;
-}
-
-@media (max-width: 1200px) {
-  .dashboard-grid { grid-template-columns: 1fr; height: auto; }
-}
+  padding: 16px
