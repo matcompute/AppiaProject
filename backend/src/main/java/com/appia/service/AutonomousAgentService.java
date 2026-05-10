@@ -510,10 +510,12 @@ public class AutonomousAgentService {
         double maxP = candidates.stream().mapToDouble(NetworkNode::getEnergyCostEurKwh).max().orElse(1);
 
         double wCarbon, wLatency, wCost, wLoad;
-        switch (sfc.getPriority()) {
-            case CRITICAL -> { wCarbon = 0.20; wLatency = 0.50; wCost = 0.10; wLoad = 0.20; }
-            case MEDIUM   -> { wCarbon = 0.35; wLatency = 0.25; wCost = 0.25; wLoad = 0.15; }
-            default       -> { wCarbon = 0.45; wLatency = 0.10; wCost = 0.35; wLoad = 0.10; }
+        if (sfc.getPriority() == ServiceFunctionChain.Priority.CRITICAL) {
+            wCarbon = 0.20; wLatency = 0.50; wCost = 0.10; wLoad = 0.20;
+        } else if (sfc.getPriority() == ServiceFunctionChain.Priority.MEDIUM) {
+            wCarbon = 0.35; wLatency = 0.25; wCost = 0.25; wLoad = 0.15;
+        } else {
+            wCarbon = 0.45; wLatency = 0.10; wCost = 0.35; wLoad = 0.10;
         }
 
         return candidates.stream().min(Comparator.comparingDouble(n -> {
@@ -562,7 +564,4 @@ public class AutonomousAgentService {
         return quarantinedNodes.contains(nodeId);
     }
 
-    public Set<String> getQuarantinedNodes() {
-        return Collections.unmodifiableSet(quarantinedNodes);
-    }
-}
+    public Set<String> getQuarantinedNodes() 
